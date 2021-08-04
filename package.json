@@ -9,6 +9,9 @@
   "author": "François-Clément Brossard",
   "license": "Apache-2.0",
   "bin": {
-   "esdl": "./bin/index.js"
- }
+    "esdl": "./bin/index.js"
+  },
+  "dependencies": {
+    "yargs": "^13.2.4"
+  }
 }
