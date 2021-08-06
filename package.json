@@ -9,12 +9,12 @@
     "author": "François-Clément Brossard",
     "license": "Apache-2.0",
     "bin": {
-        "ecdl": "./bin/index.js"
+        "ecdl": "./index.js"
     },
     "dependencies": {
+        "axios": "^0.21.1",
         "chalk": "^4.1.2",
         "figlet": "^1.5.0",
-        "inquirer": "^8.1.2",
-        "yargs": "^13.2.4"
+        "inquirer": "^8.1.2"
     }
 }
