@@ -2,6 +2,8 @@
 
 const figlet = require('figlet');
 const chalk = require('chalk');
+const CLI = require('clui');
+var Spinner = CLI.Spinner;
 const axios = require('axios');
 const inquirer = require('inquirer');
 inquirer.registerPrompt('search-list', require('inquirer-search-list'));
@@ -131,7 +133,24 @@ inquirer.prompt([
 }
 ])
 .then((download) => {
-    console.log(JSON.stringify(download, null, '  '));
+    try {
+        var status = new Spinner('Downloading, 10 seconds remaining...  ');
+        status.start();
+        var number = 10;
+        setInterval(function () {
+          number--;
+          status.message('Downloading, ' + number + ' seconds remaining...  ');
+          if (number === 0) {
+            process.stdout.write('\n');
+            console.log(JSON.stringify(download, null, '  '));
+            process.exit(0);
+          }
+        }, 1000);
+    } catch {
+        console.log(chalk.red("Download failed :/"));
+        process.exit(0);
+
+    }
 });
 
 
