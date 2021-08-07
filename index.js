@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-
+const fs = require('fs');
 const figlet = require('figlet');
 const chalk = require('chalk');
 const CLI = require('clui');
-var Spinner = CLI.Spinner;
+const Spinner = CLI.Spinner;
 const axios = require('axios');
 const inquirer = require('inquirer');
 inquirer.registerPrompt('search-list', require('inquirer-search-list'));
@@ -13,6 +13,40 @@ console.log(
         figlet.textSync('Elastic Downloader CLI', { horizontalLayout: 'default' })
         )
     );
+
+async function download (answers) {
+    const status = new Spinner('Downloading...  ');
+    const filename = `${answers.product}-${answers.version}-${answers.arch}.tar.gz`
+    const url = `https://artifacts.elastic.co/downloads/${answers.product}/${filename}`;
+    console.log(chalk.yellow(`File will be downloaded from ${url}`));
+
+    status.start();
+
+    const writer = fs.createWriteStream(filename);
+
+    const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'stream'
+    })
+
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+        writer.on('finish', () => {
+            status.stop();
+            process.stdout.write('\n');
+            console.log(chalk.green("Download completed! :)"));
+            resolve();
+        })
+        writer.on('error', (err) => {
+            status.stop();
+            process.stdout.write('\n');
+            console.log(chalk.red("Download failed :/"));
+            reject(err);
+        })
+    })
+}
 
 inquirer.prompt([
 {
@@ -27,10 +61,6 @@ inquirer.prompt([
         {
             name: 'MACOS',
             value: 'darwin-x86_64'
-        },
-        {
-            name: 'WINDOWS',
-            value: 'windows-x86_64'
         },
     ]
 },
@@ -132,26 +162,10 @@ inquirer.prompt([
     message: (answers) => `Are you sure to download ${answers.product} ${answers.version} (${answers.arch}) in the current directory?`
 }
 ])
-.then((download) => {
-    try {
-        var status = new Spinner('Downloading, 10 seconds remaining...  ');
-        status.start();
-        var number = 10;
-        setInterval(function () {
-          number--;
-          status.message('Downloading, ' + number + ' seconds remaining...  ');
-          if (number === 0) {
-            process.stdout.write('\n');
-            console.log(JSON.stringify(download, null, '  '));
-            process.exit(0);
-          }
-        }, 1000);
-    } catch {
-        console.log(chalk.red("Download failed :/"));
-        process.exit(0);
+.then((answers) => { download(answers) });
 
-    }
-});
+
+
 
 
 
