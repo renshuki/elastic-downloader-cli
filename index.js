@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const fs = require('fs');
 const figlet = require('figlet');
 const chalk = require('chalk');
@@ -8,39 +9,55 @@ const axios = require('axios');
 const inquirer = require('inquirer');
 inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 
+const versionStatus = new Spinner('Fetching versions from Github repository...  ');
+const downloadStatus = new Spinner('Downloading...  ');
+
+
 console.log(
     chalk.green(
         figlet.textSync('Elastic Downloader CLI', { horizontalLayout: 'default' })
         )
     );
 
-async function download (answers) {
-    const status = new Spinner('Downloading...  ');
+async function download(answers) {
     const filename = `${answers.product}-${answers.version}-${answers.arch}.tar.gz`
     const url = `https://artifacts.elastic.co/downloads/${answers.product}/${filename}`;
+
+    if (fs.existsSync(filename)) {
+      console.log(chalk.red('File already exists! Abort.'));
+      process.exit(0);
+    }
+
     console.log(chalk.yellow(`File will be downloaded from ${url}`));
 
-    status.start();
+    downloadStatus.start();
+
+    var response;
+
+    try {
+        response = await axios({
+            url,
+            method: 'GET',
+            responseType: 'stream'
+        });
+    } catch {
+        downloadStatus.stop();
+        console.log(chalk.red("File not found :/"));
+        process.exit(0);
+    }
 
     const writer = fs.createWriteStream(filename);
-
-    const response = await axios({
-        url,
-        method: 'GET',
-        responseType: 'stream'
-    })
-
     response.data.pipe(writer)
 
     return new Promise((resolve, reject) => {
         writer.on('finish', () => {
-            status.stop();
+            downloadStatus.stop();
             process.stdout.write('\n');
             console.log(chalk.green("Download completed! :)"));
             resolve();
         })
         writer.on('error', (err) => {
-            status.stop();
+            downloadStatus.stop();
             process.stdout.write('\n');
             console.log(chalk.red("Download failed :/"));
             reject(err);
@@ -62,6 +79,10 @@ inquirer.prompt([
             name: 'MACOS',
             value: 'darwin-x86_64'
         },
+        {
+            name: 'WINDOWS',
+            value: 'windows-x86_64'
+        }
     ]
 },
 {
@@ -140,21 +161,33 @@ inquirer.prompt([
     ],
     default: 'elasticsearch',
 },
+// TODO: Use search-list instead of manually type a version when fallback possible with Inquirer.js
+//
+// {
+//     name: 'version',
+//     type: 'search-list',
+//     message: 'Choose a version:',
+//     choices: (answers) => new Promise((resolve, reject) => {
+//             versionStatus.start();
+//             resolve(axios.get(`https://api.github.com/repos/elastic/${answers.product}/tags`));
+//         }).then( response => {
+//             let versionsList = []
+//             response.data.forEach( item => {
+//                 versionsList.push(item.name.substring(1));
+//             })
+//             versionStatus.stop();
+//             return versionsList;
+//         }).catch((err) => {
+//             versionStatus.stop();
+//             process.stdout.write('\n');
+//             console.error(chalk.red("Github repository not found :/"))
+//             process.exit(0);
+//         })
+// },
 {
     name: 'version',
-    type: 'search-list',
-    message: 'Type a version:',
-    choices: (answers) =>  axios.get(`https://api.github.com/repos/elastic/${answers.product}/tags`)
-        .then( response => {
-            let versionsList = []
-            response.data.forEach( item => {
-                versionsList.push(item.name.substring(1));
-            })
-            return versionsList;
-        }).catch((err) => {
-            console.error(chalk.red("No version found :/"))
-            process.exit(0);
-        })
+    type: 'input',
+    message: 'Type a version:'
 },
 {
     name: 'confirm',
