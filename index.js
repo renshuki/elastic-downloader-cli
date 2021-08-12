@@ -20,8 +20,8 @@ console.log(
     );
 
 async function download(answers) {
-    const filename = `${answers.product}-${answers.version}-${answers.arch}.tar.gz`
-    const url = `https://artifacts.elastic.co/downloads/${answers.product}/${filename}`;
+    const filename = `${answers.product[2]}-${answers.version}-${answers.arch[1]}.${answers.arch[2]}`
+    const url = `https://artifacts.elastic.co/downloads/${answers.product[1]}/${filename}`;
 
     if (fs.existsSync(filename)) {
       console.log(chalk.red('File already exists! Abort.'));
@@ -72,16 +72,16 @@ inquirer.prompt([
     message: 'Select an architecture:',
     choices: [
         {
-            name: 'LINUX X86-64',
-            value: 'linux-x86_64'
+            name: 'LINUX 64-BIT',
+            value: ['LINUX 64-BIT', 'linux-x86_64', 'tar.gz']
         },
         {
-            name: 'MACOS',
-            value: 'darwin-x86_64'
+            name: 'MAC',
+            value: ['MAC', 'darwin-x86_64', 'tar.gz']
         },
         {
-            name: 'WINDOWS',
-            value: 'windows-x86_64'
+            name: 'WINDOWS 64-BIT',
+            value: ['WINDOWS 64-BIT', 'windows-x86_64', 'zip']
         }
     ]
 },
@@ -94,69 +94,69 @@ inquirer.prompt([
         new inquirer.Separator('--- Elastic Stack ---'),
         {
             name: 'Elasticsearch',
-            value: 'elasticsearch'
+            value: ['Elasticsearch', 'elasticsearch', 'elasticsearch']
         },
         {
             name: 'Kibana',
-            value: 'kibana'
+            value: ['Kibana', 'kibana', 'kibana']
         },
         {
             name: 'Logstash',
-            value: 'logstash'
+            value: ['Logstash', 'logstash', 'logstash']
         },
         new inquirer.Separator('--- Elastic Enterprise Search ---'),
         {
             name: 'App Search',
-            value: 'app-search'
+            value: ['App Search', 'app-search', 'app-search']
         },
         {
             name: 'Enterprise Search',
-            value: 'enterprise-search'
+            value: ['Enterprise Search', 'enterprise-search', 'enterprise-search']
         },
         new inquirer.Separator('--- Elastic Observability ---'),
         {
             name: 'APM Server',
-            value: 'apm-server'
+            value: ['APM Server', 'apm-server', 'apm-server']
         },
         {
             name: 'Elastic Agent',
-            value: 'elastic-agent'
+            value: ['Elastic Agent', 'elastic-agent', 'elastic-agent']
         },
         {
             name: 'Auditbeat',
-            value: 'auditbeat'
+            value: ['Auditbeat', 'beats', 'auditbeat']
         },
         {
             name: 'Filebeat',
-            value: 'filebeat'
+            value: ['Filebeat', 'beats', 'filebeat']
         },
         {
             name: 'Functionbeat',
-            value: 'functionbeat'
+            value: ['Functionbeat', 'beats', 'functionbeat']
         },
         {
             name: 'Heartbeat',
-            value: 'heartbeat'
+            value: ['Heartbeat', 'beats', 'heartbeat']
         },
         {
             name: 'Journalbeat',
-            value: 'jounalbeat'
+            value: ['Journalbeat', 'beats', 'jounalbeat']
         },
         {
             name: 'Metricbeat',
-            value: 'metricbeat'
+            value: ['Metricbeat', 'beats', 'metricbeat']
         },
         {
             name: 'Packetbeat',
-            value: 'packetbeat'
+            value: ['Packetbeat', 'beats', 'packetbeat']
         },
         {
             name: 'Topbeat',
-            value: 'topbeat'
+            value: ['Topbeat', 'beats', 'topbeat']
         },
         {
             name: 'Winlogbeat',
-            value: 'winlogbeat'
+            value: ['Winlogbeat', 'beats', 'winlogbeat']
         }
     ],
     default: 'elasticsearch',
@@ -192,7 +192,7 @@ inquirer.prompt([
 {
     name: 'confirm',
     type: 'confirm',
-    message: (answers) => `Are you sure to download ${answers.product} ${answers.version} (${answers.arch}) in the current directory?`
+    message: (answers) => `Are you sure to download ${answers.product[0]} ${answers.version} (${answers.arch[0]}) in the current directory?`
 }
 ])
 .then((answers) => { download(answers) });
