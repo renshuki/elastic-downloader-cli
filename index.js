@@ -124,35 +124,35 @@ inquirer.prompt([
         },
         {
             name: 'Auditbeat',
-            value: ['Auditbeat', 'beats', 'auditbeat']
+            value: ['Auditbeat', 'beats/auditbeat', 'auditbeat']
         },
         {
             name: 'Filebeat',
-            value: ['Filebeat', 'beats', 'filebeat']
+            value: ['Filebeat', 'beats/filebeat', 'filebeat']
         },
         {
             name: 'Functionbeat',
-            value: ['Functionbeat', 'beats', 'functionbeat']
+            value: ['Functionbeat', 'beats/functionbeat', 'functionbeat']
         },
         {
             name: 'Heartbeat',
-            value: ['Heartbeat', 'beats', 'heartbeat']
+            value: ['Heartbeat', 'beats/heartbeat', 'heartbeat']
         },
         {
             name: 'Journalbeat',
-            value: ['Journalbeat', 'beats', 'jounalbeat']
+            value: ['Journalbeat', 'beats/journalbeat', 'jounalbeat']
         },
         {
             name: 'Metricbeat',
-            value: ['Metricbeat', 'beats', 'metricbeat']
+            value: ['Metricbeat', 'beats/metricbeat', 'metricbeat']
         },
         {
             name: 'Packetbeat',
-            value: ['Packetbeat', 'beats', 'packetbeat']
+            value: ['Packetbeat', 'beats/packetbeat', 'packetbeat']
         },
         {
             name: 'Topbeat',
-            value: ['Topbeat', 'beats', 'topbeat']
+            value: ['Topbeat', 'beats/topbeat', 'topbeat']
         },
         {
             name: 'Winlogbeat',
