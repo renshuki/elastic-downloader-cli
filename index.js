@@ -162,6 +162,8 @@ inquirer.prompt([
     default: 'elasticsearch',
 },
 // TODO: Use search-list instead of manually type a version when fallback possible with Inquirer.js
+// Not all products have a Github repository which make fetch from: https://api.github.com/repos/elastic/product_name/tags
+// not compatible accross all products. Need to figure out an endpoint to retrieve the products versions in JSON format.
 //
 // {
 //     name: 'version',
