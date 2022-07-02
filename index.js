@@ -76,19 +76,44 @@ inquirer.prompt([
     name: 'arch',
     type: 'list',
     message: 'Select an architecture:',
+    pageSize: 20,
     choices: [
         {
             name: 'LINUX 64-BIT',
             value: ['LINUX 64-BIT', 'linux-x86_64', 'tar.gz']
         },
         {
-            name: 'MAC',
-            value: ['MAC', 'darwin-x86_64', 'tar.gz']
+            name: 'LINUX ARM',
+            value: ['LINUX ARM', 'linux-aarch64', 'tar.gz']
         },
         {
-            name: 'WINDOWS 64-BIT',
-            value: ['WINDOWS 64-BIT', 'windows-x86_64', 'zip']
-        }
+            name: 'MACOS 64-BIT',
+            value: ['MACOS 64-BIT', 'darwin-x86_64', 'tar.gz']
+        },
+        {
+            name: 'MACOS ARM',
+            value: ['MACOS 64-BIT', 'darwin-aarch64', 'tar.gz']
+        },
+        {
+            name: 'WINDOWS',
+            value: ['WINDOWS', 'windows-x86_64', 'zip']
+        },
+        {
+            name: 'DEB 64-BIT',
+            value: ['DEB 64-BIT', 'amd64', 'deb']
+        },
+        {
+            name: 'DEB ARM',
+            value: ['DEB ARM', 'arm64', 'deb']
+        },
+        {
+            name: 'RPM 64-BIT',
+            value: ['RPM 64-BIT', 'x86_64', 'rpm']
+        },
+        {
+            name: 'RPM ARM',
+            value: ['RPM ARM', 'aarch64', 'rpm']
+        },
     ]
 },
 {
