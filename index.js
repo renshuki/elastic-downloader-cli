@@ -20,7 +20,13 @@ console.log(
     );
 
 async function download(answers) {
-    const filename = `${answers.product[2]}-${answers.version}-${answers.arch[1]}.${answers.arch[2]}`
+    let filename = `${answers.product[2]}-${answers.version}-${answers.arch[1]}.${answers.arch[2]}`
+
+    // for versions downloads prior to 7.0.0
+    if (parseInt(answers.version.split(".").shift()) < 7) {
+        filename = `${answers.product[2]}-${answers.version}.${answers.arch[2]}`
+    }
+
     const url = `https://artifacts.elastic.co/downloads/${answers.product[1]}/${filename}`;
 
     if (fs.existsSync(filename)) {
