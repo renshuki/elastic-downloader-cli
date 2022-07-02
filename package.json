@@ -6,8 +6,14 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
+    "preferGlobal": true,
     "author": "François-Clément Brossard",
     "license": "Apache-2.0",
+    "homepage": "https://github.com/renshuki/elastic-downloader-cli",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/renshuki/elastic-downloader-cli.git"
+    },
     "bin": {
         "ecdl": "./index.js"
     },
