@@ -1,6 +1,6 @@
 {
     "name": "elastic-downloader-cli",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Download Elastic products from command-line.",
     "main": "index.js",
     "scripts": {
@@ -11,8 +11,8 @@
     "license": "Apache-2.0",
     "homepage": "https://github.com/renshuki/elastic-downloader-cli",
     "repository": {
-      "type": "git",
-      "url": "https://github.com/renshuki/elastic-downloader-cli.git"
+        "type": "git",
+        "url": "https://github.com/renshuki/elastic-downloader-cli.git"
     },
     "bin": {
         "ecdl": "./index.js"
