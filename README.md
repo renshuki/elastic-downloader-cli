@@ -1,6 +1,10 @@
 # elastic-downloader-cli
 Download Elastic products from command-line
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/7076736/177441482-be8c08e4-a0a9-4f4f-a416-7183925e19e0.png">
+</p>
+
 ## Install
 ```
 npm install -g elastic-downloader-cli
