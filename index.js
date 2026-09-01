@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require('fs');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 inquirer.registerPrompt('search-list', require('inquirer-search-list'));
@@ -31,6 +32,11 @@ async function main() {
 
     if (answers.extract) {
         await extract(filename);
+
+        if (answers.deleteArchive) {
+            fs.unlinkSync(filename);
+            console.log(chalk.green(`Archive ${filename} deleted!`));
+        }
     }
 }
 
