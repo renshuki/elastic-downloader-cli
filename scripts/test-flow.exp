@@ -1,5 +1,5 @@
 #!/usr/bin/expect -f
-# Drives the interactive prompts: pick first arch, first product,
+# Drives the interactive prompts: pick first product, first architecture,
 # type a version, and answer the confirmation.
 # Usage: test-flow.exp <version> <y|n>
 set timeout 120
@@ -7,13 +7,18 @@ set version [lindex $argv 0]
 set confirm [lindex $argv 1]
 
 spawn node index.js
-expect "Select an architecture:"
-send "\r"
 expect "Select a product:"
+send "\r"
+expect "Select an architecture / package:"
 send "\r"
 expect "Type a version:"
 send "$version\r"
-expect "Are you sure to download"
+# Legacy versions (before a product's noArchBefore boundary) show the
+# "Download ... anyway?" warning instead of the standard confirmation.
+expect {
+    "Are you sure to download" {}
+    "anyway?" {}
+}
 send "$confirm\r"
 expect {
     "Download cancelled." { exit 0 }
