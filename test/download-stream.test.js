@@ -101,6 +101,23 @@ test('download rejects when the target file already exists', async () => {
     );
 });
 
+test('download rejects and removes the partial file when the transfer stalls', async () => {
+    await withServer(
+        (req, res) => {
+            // Send some data, then go silent without closing the connection.
+            res.writeHead(200, { 'Content-Length': '1000' });
+            res.write('partial data');
+        },
+        async (product, filename) => {
+            await assert.rejects(
+                download({ product, arch: ARCH, version: '1.0.0' }, { stallTimeoutMs: 200 }),
+                /Download stalled/
+            );
+            assert.ok(!fs.existsSync(filename), 'the partial file must be removed');
+        }
+    );
+});
+
 test('download rejects and removes the partial file when the stream drops', async () => {
     await withServer(
         (req, res) => {
