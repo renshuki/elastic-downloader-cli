@@ -36,4 +36,7 @@ async function main() {
     }
 }
 
-main();
+main().catch((err) => {
+    console.error(chalk.red(err.message || String(err)));
+    process.exitCode = 1;
+});
