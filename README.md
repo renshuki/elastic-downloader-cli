@@ -25,7 +25,7 @@ ecdl
 - **Tools and clients**: Elasticsearch for Apache Hadoop, Elasticsearch SQL ODBC Driver, X-Pack (5.0 to 6.2)
 - **OSS distributions** (Apache 2.0, 6.3 to 7.10): Elasticsearch OSS, Kibana OSS, Logstash OSS, APM Server OSS, Auditbeat OSS, Filebeat OSS, Heartbeat OSS, Journalbeat OSS, Metricbeat OSS, Packetbeat OSS, Winlogbeat OSS (Functionbeat never shipped an OSS variant)
 
-Available packages: `tar.gz` (Linux x86_64 / aarch64, macOS Intel / Apple Silicon), `zip` (Windows 64-bit / 32-bit), `deb` (amd64 / arm64), `rpm` (x86_64 / aarch64) and `msi` (ODBC driver). Architecture choices are filtered per product, and version-specific filename schemes (e.g. Elasticsearch before 7.0.0 or Logstash before 7.10.0 not embedding the architecture) are handled automatically.
+Available packages: `tar.gz` (Linux x86_64 / aarch64 / arm64, macOS Intel / Apple Silicon, and platform independent for App Search / Enterprise Search), `zip` (Windows 64-bit / 32-bit, and platform independent for Elasticsearch for Apache Hadoop / X-Pack), `tgz` (legacy Topbeat for macOS), `deb` (amd64 / arm64, plus legacy i386), `rpm` (x86_64 / aarch64, plus legacy i686) and `msi` (ODBC driver, 64 / 32-bit). Architecture choices are filtered per product, and version-specific filename schemes (e.g. Elasticsearch before 7.0.0 or Logstash before 7.10.0 not embedding the architecture) are handled automatically.
 
 ## Todo
 - [ ] Add auto-extract archive feature (uncompress the archive after the download)
