@@ -1,7 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-const { compareVersions, buildFilename, buildUrl } = require('../lib/download');
+const { compareVersions, buildFilename, buildUrl, isLegacyNoArch } = require('../lib/download');
 const productGroups = require('../lib/products');
 const { architecturesFor } = require('../lib/architectures');
 
@@ -104,6 +104,25 @@ test('buildFilename uses custom filename builders for legacy Topbeat packages', 
         buildFilename(topbeat, findArch(topbeat, 'rpm-i686'), '1.3.1'),
         'topbeat-1.3.1-i686.rpm'
     );
+});
+
+test('isLegacyNoArch flags architecture selections dropped by noArchBefore', () => {
+    const elasticsearch = findProduct('elasticsearch');
+    const kibana = findProduct('kibana');
+    const logstash = findProduct('logstash');
+    const enterpriseSearch = findProduct('enterprise-search');
+
+    // The selection is dropped for versions before the boundary
+    assert.ok(isLegacyNoArch(elasticsearch, findArch(elasticsearch, 'linux-aarch64'), '6.8.23'));
+    assert.ok(isLegacyNoArch(logstash, findArch(logstash, 'linux-x86_64'), '7.9.3'));
+
+    // Modern versions embed the architecture normally
+    assert.ok(!isLegacyNoArch(elasticsearch, findArch(elasticsearch, 'linux-aarch64'), '8.14.0'));
+    assert.ok(!isLegacyNoArch(logstash, findArch(logstash, 'linux-x86_64'), '7.10.0'));
+
+    // Products without the rule, and platform independent packages, never flag
+    assert.ok(!isLegacyNoArch(kibana, findArch(kibana, 'linux-x86_64'), '6.8.23'));
+    assert.ok(!isLegacyNoArch(enterpriseSearch, findArch(enterpriseSearch, 'noarch-tar-gz'), '8.14.0'));
 });
 
 test('buildUrl uses the artifacts server by default and baseUrl overrides', () => {
