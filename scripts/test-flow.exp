@@ -16,7 +16,12 @@ expect {
     "Choose a version (type to filter):" { send "$version\r" }
     "Type a version:" { send "$version\r" }
 }
-expect "Are you sure to download"
+# Legacy versions (before a product's noArchBefore boundary) show the
+# "Download ... anyway?" warning instead of the standard confirmation.
+expect {
+    "Are you sure to download" {}
+    "anyway?" {}
+}
 send "$confirm\r"
 expect {
     "Download cancelled." { exit 0 }
