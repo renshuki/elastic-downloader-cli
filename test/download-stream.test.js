@@ -31,7 +31,8 @@ async function withServer(handler, run) {
         await run(product, filename);
     } finally {
         process.chdir(previousCwd);
-        server.close();
+        await new Promise((resolve) => server.close(resolve));
+        fs.rmSync(dir, { recursive: true, force: true });
     }
 }
 
