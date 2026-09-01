@@ -7,6 +7,9 @@
         "test": "node --test"
     },
     "preferGlobal": true,
+    "engines": {
+        "node": ">=18.0.0"
+    },
     "author": "François-Clément Brossard",
     "license": "Apache-2.0",
     "homepage": "https://github.com/renshuki/elastic-downloader-cli",
@@ -21,8 +24,10 @@
         "axios": "^0.21.1",
         "chalk": "^4.1.2",
         "clui": "^0.3.6",
+        "extract-zip": "^2.0.1",
         "figlet": "^1.5.0",
         "inquirer": "^8.1.2",
-        "inquirer-search-list": "^1.2.6"
+        "inquirer-search-list": "^1.2.6",
+        "tar": "^7.5.22"
     }
 }
