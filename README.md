@@ -20,7 +20,7 @@ ecdl
 ## Todo
 - [ ] Add auto-extract archive feature (uncompress the archive after the download)
 - [ ] Add auto-delete archive feature (delete the archive after uncompressed)
-- [ ] Refactor the code
+- [x] Refactor the code
 - [ ] Fix the TODO comment to fetch product version (via search-list) rather than relying on 'input'
 - [ ] Implement **[yargs](https://github.com/yargs/yargs)** _or_ **[minimist](https://github.com/substack/minimist)** _or_ **[commander](https://github.com/tj/commander.js/)** to allow product download using command-line arguments
 - [ ] Extend supported prodcuts / architectures
