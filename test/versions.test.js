@@ -72,6 +72,25 @@ test('manual input defaults to the latest release within the product range', () 
     assert.equal(manual.default({ product }), '7.10.2');
 });
 
+test('typed versions are validated against a URL and filename safe format', () => {
+    // Same validation in both prompts: the manual escape hatch (fetched
+    // list) and the plain input (version fetch failed).
+    const inputs = [
+        questionByName(buildQuestions(VERSIONS), 'manualVersion'),
+        questionByName(buildQuestions(null), 'version'),
+    ];
+
+    for (const input of inputs) {
+        assert.equal(input.validate('8.14.0'), true);
+        assert.equal(input.validate(' 8.14.0 '), true, 'surrounding whitespace is trimmed');
+        assert.equal(input.validate('8.0.0-rc1'), true, 'pre-releases stay reachable');
+        assert.notEqual(input.validate(''), true);
+        assert.notEqual(input.validate('   '), true);
+        assert.notEqual(input.validate('../../8.14.0'), true, 'path separators are rejected');
+        assert.notEqual(input.validate('8.14.0 linux'), true, 'inner whitespace is rejected');
+    }
+});
+
 test('resolvedVersion uses the manual input when the version list was skipped', () => {
     assert.equal(resolvedVersion({ version: undefined, manualVersion: '2.4.6' }), '2.4.6');
     assert.equal(resolvedVersion({ version: '8.14.0', manualVersion: undefined }), '8.14.0');
