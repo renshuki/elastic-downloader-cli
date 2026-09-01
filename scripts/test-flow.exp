@@ -17,12 +17,18 @@ expect {
     "Type a version:" { send "$version\r" }
 }
 # The extraction prompt only shows up for tar.gz / tgz / zip selections.
+# Legacy versions (before a product's noArchBefore boundary) show the
+# "Download ... anyway?" warning instead of the standard confirmation.
 expect {
     "Extract the archive after the download?" {
         send "n\r"
-        expect "Are you sure to download"
+        expect {
+            "Are you sure to download" {}
+            "anyway?" {}
+        }
     }
     "Are you sure to download" {}
+    "anyway?" {}
 }
 send "$confirm\r"
 expect {
