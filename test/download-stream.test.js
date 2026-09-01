@@ -82,6 +82,24 @@ test('download surfaces the status of non-404 failures', async () => {
     );
 });
 
+test('download rejects when the target file already exists', async () => {
+    await withServer(
+        (req, res) => {
+            res.writeHead(200);
+            res.end('new content');
+        },
+        async (product, filename) => {
+            fs.writeFileSync(filename, 'leftover');
+
+            await assert.rejects(
+                download({ product, arch: ARCH, version: '1.0.0' }),
+                { message: `File already exists! Abort. (${filename})` }
+            );
+            assert.equal(fs.readFileSync(filename, 'utf8'), 'leftover', 'the existing file must be untouched');
+        }
+    );
+});
+
 test('download rejects and removes the partial file when the stream drops', async () => {
     await withServer(
         (req, res) => {
