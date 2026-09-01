@@ -2,13 +2,14 @@
     "name": "elastic-downloader-cli",
     "version": "2.0.0",
     "description": "Download Elastic products from command-line.",
+    "type": "module",
     "main": "index.js",
     "scripts": {
         "test": "node --test"
     },
     "preferGlobal": true,
     "engines": {
-        "node": ">=18.0.0"
+        "node": "^20.17.0 || ^22.13.0 || >=23.5.0"
     },
     "author": "François-Clément Brossard",
     "license": "Apache-2.0",
@@ -21,14 +22,13 @@
         "ecdl": "./index.js"
     },
     "dependencies": {
+        "@inquirer/prompts": "^8.6.0",
         "axios": "^1.19.0",
         "chalk": "^4.1.2",
         "clui": "^0.3.6",
         "commander": "^13.1.0",
         "extract-zip": "^2.0.1",
         "figlet": "^1.5.0",
-        "inquirer": "^8.1.2",
-        "inquirer-search-list": "^1.2.6",
         "tar": "^7.5.22"
     }
 }

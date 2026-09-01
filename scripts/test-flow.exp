@@ -12,9 +12,12 @@ expect "Select a product:"
 send "\r"
 expect "Select an architecture / package:"
 send "\r"
+# The search list refreshes asynchronously after every keystroke: pause
+# before pressing Enter so the selection targets the refreshed list instead
+# of racing it (a human pause, machine-speed input is faster than a render).
 expect {
-    "Choose a version (type to filter):" { send "$version\r" }
-    "Type a version:" { send "$version\r" }
+    "Choose a version (type to filter):" { send -- "$version"; sleep 1; send -- "\r" }
+    "Type a version:" { send -- "$version"; sleep 1; send -- "\r" }
 }
 # The extraction prompt only shows up for tar.gz / tgz / zip selections.
 # Legacy versions (before a product's noArchBefore boundary) show the

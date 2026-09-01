@@ -1,11 +1,11 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
-const tar = require('tar');
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import * as tar from 'tar';
 
-const { isExtractable, extract } = require('../lib/extract');
+import { isExtractable, extract } from '../lib/extract.js';
 
 // extract() unpacks into the current working directory, so each test runs
 // from its own temporary directory.

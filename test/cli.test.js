@@ -1,7 +1,7 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
 
-const { presetAnswers } = require('../lib/cli');
+import { presetAnswers } from '../lib/cli.js';
 
 test('presetAnswers resolves product and architecture by their ids', () => {
     const preset = presetAnswers({ product: 'elasticsearch', arch: 'linux-x86_64', productVersion: '8.14.0' });
