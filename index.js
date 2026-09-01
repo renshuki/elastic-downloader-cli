@@ -6,21 +6,29 @@ const inquirer = require('inquirer');
 inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 
 const printBanner = require('./lib/banner');
+const { parseArgs } = require('./lib/cli');
 const { buildQuestions, resolvedVersion } = require('./lib/questions');
 const { fetchVersions } = require('./lib/versions');
 const { download } = require('./lib/download');
-const { extract } = require('./lib/extract');
+const { extract, isExtractable } = require('./lib/extract');
 
 async function main() {
+    const preset = parseArgs(process.argv);
+
     printBanner();
 
-    const versions = await fetchVersions();
+    // The version list is only needed when the version will be prompted.
+    let versions = null;
 
-    if (!versions) {
-        console.log(chalk.yellow('Could not fetch the list of available versions, the version will need to be typed manually.'));
+    if (preset.version === undefined) {
+        versions = await fetchVersions();
+
+        if (!versions) {
+            console.log(chalk.yellow('Could not fetch the list of available versions, the version will need to be typed manually.'));
+        }
     }
 
-    const answers = await inquirer.prompt(buildQuestions(versions));
+    const answers = await inquirer.prompt(buildQuestions(versions), preset);
     answers.version = resolvedVersion(answers);
 
     if (!answers.confirm) {
@@ -30,7 +38,7 @@ async function main() {
 
     const filename = await download(answers);
 
-    if (answers.extract) {
+    if (answers.extract && isExtractable(answers.arch)) {
         await extract(filename);
 
         if (answers.deleteArchive) {
