@@ -24,6 +24,7 @@
         "axios": "^0.21.1",
         "chalk": "^4.1.2",
         "clui": "^0.3.6",
+        "commander": "^13.1.0",
         "extract-zip": "^2.0.1",
         "figlet": "^1.5.0",
         "inquirer": "^8.1.2",

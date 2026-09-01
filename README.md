@@ -11,11 +11,32 @@ npm install -g elastic-downloader-cli
 ```
 
 ## Usage
+
+Interactive mode:
 ``` 
 ecdl
 ``` 
 
 > Follow the instructions to download the desired product
+
+Non-interactive mode:
+```
+ecdl --product elasticsearch --arch linux-x86_64 --product-version 8.14.0 --yes
+```
+
+Options can also be combined with the interactive prompts: whatever is not passed on the command line will be asked interactively.
+
+```
+  -p, --product <product>            product to download, by slug (see --list-products)
+  -a, --arch <arch>                  architecture / package id (see --list-products)
+  -v, --product-version <version>    product version to download
+  --extract                          extract the archive after the download
+  --delete-archive                   delete the archive once extracted (implies --extract)
+  -y, --yes                          skip the confirmation prompt
+  --list-products                    list the available products and architectures, then exit
+  -V, --cli-version                  output the elastic-downloader-cli version
+  -h, --help                         display help for command
+```
 
 ## Supported products
 
@@ -32,5 +53,5 @@ Available packages: `tar.gz` (Linux x86_64 / aarch64 / arm64, macOS Intel / Appl
 - [x] Add auto-delete archive feature (delete the archive after uncompressed)
 - [x] Refactor the code
 - [x] Fix the TODO comment to fetch product version (via search-list) rather than relying on 'input'
-- [ ] Implement **[yargs](https://github.com/yargs/yargs)** _or_ **[minimist](https://github.com/substack/minimist)** _or_ **[commander](https://github.com/tj/commander.js/)** to allow product download using command-line arguments
+- [x] Implement **[commander](https://github.com/tj/commander.js/)** to allow product download using command-line arguments
 - [x] Extend supported products / architectures

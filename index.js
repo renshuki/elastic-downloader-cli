@@ -6,24 +6,46 @@ const inquirer = require('inquirer');
 inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 
 const printBanner = require('./lib/banner');
+const { parseArgs } = require('./lib/cli');
 const { buildQuestions, resolvedVersion } = require('./lib/questions');
 const { fetchVersions } = require('./lib/versions');
-const { download } = require('./lib/download');
-const { extract } = require('./lib/extract');
+const { download, isLegacyNoArch } = require('./lib/download');
+const { extract, isExtractable } = require('./lib/extract');
 
 async function main() {
+    const preset = parseArgs(process.argv);
+
     printBanner();
 
-    const versions = await fetchVersions();
+    // The version list is only needed when the version will be prompted.
+    let versions = null;
 
-    // An empty list means the endpoints answered but provided nothing
-    // usable, which is just as unusable as a failed fetch.
-    if (!versions || versions.length === 0) {
-        console.log(chalk.yellow('Could not fetch the list of available versions, the version will need to be typed manually.'));
+    if (preset.version === undefined) {
+        versions = await fetchVersions();
+
+        // An empty list means the endpoints answered but provided nothing
+        // usable, which is just as unusable as a failed fetch.
+        if (!versions || versions.length === 0) {
+            console.log(chalk.yellow('Could not fetch the list of available versions, the version will need to be typed manually.'));
+        }
     }
 
-    const answers = await inquirer.prompt(buildQuestions(versions));
+    const answers = await inquirer.prompt(buildQuestions(versions), preset);
     answers.version = resolvedVersion(answers);
+
+    // The interactive confirmation prompt carries this caveat itself, but a
+    // scripted run (--yes) skips the prompt, so the notice must be printed.
+    if (preset.confirm && isLegacyNoArch(answers.product, answers.arch, answers.version)) {
+        console.log(chalk.yellow(`${answers.product.name} versions before ${answers.product.noArchBefore} ship a single platform independent package; the "${answers.arch.name}" selection will not apply.`));
+    }
+
+    // Covers --extract combined with an interactively selected package type:
+    // the flag cannot be validated upfront when the architecture is only
+    // known after the prompt.
+    if (answers.extract && !isExtractable(answers.arch)) {
+        console.log(chalk.yellow(`.${answers.arch.ext} packages cannot be extracted, --extract will be ignored.`));
+        answers.extract = false;
+    }
 
     if (!answers.confirm) {
         console.log(chalk.yellow('Download cancelled.'));
