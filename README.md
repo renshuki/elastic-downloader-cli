@@ -44,7 +44,7 @@ Options can also be combined with the interactive prompts: whatever is not passe
 - **Elastic Observability**: Elastic Agent, APM Server, Auditbeat, Filebeat, Functionbeat, Heartbeat, Journalbeat, Metricbeat, Packetbeat, Winlogbeat, Topbeat (legacy)
 - **Elastic Enterprise Search**: App Search (7.0 to 7.6), Enterprise Search (7.7 to 8.x)
 - **Tools and clients**: Elasticsearch for Apache Hadoop, Elasticsearch SQL ODBC Driver, X-Pack (5.0 to 6.2)
-- **OSS distributions** (Apache 2.0, 6.3 to 7.10): Elasticsearch OSS, Kibana OSS, Logstash OSS, APM Server OSS, plus the OSS variant of every Beat
+- **OSS distributions** (Apache 2.0, 6.3 to 7.10): Elasticsearch OSS, Kibana OSS, Logstash OSS, APM Server OSS, Auditbeat OSS, Filebeat OSS, Heartbeat OSS, Journalbeat OSS, Metricbeat OSS, Packetbeat OSS, Winlogbeat OSS (Functionbeat never shipped an OSS variant)
 
 Available packages: `tar.gz` (Linux x86_64 / aarch64, macOS Intel / Apple Silicon), `zip` (Windows 64-bit / 32-bit), `deb` (amd64 / arm64), `rpm` (x86_64 / aarch64) and `msi` (ODBC driver). Architecture choices are filtered per product, and version-specific filename schemes (e.g. Elasticsearch before 7.0.0 or Logstash before 7.10.0 not embedding the architecture) are handled automatically.
 

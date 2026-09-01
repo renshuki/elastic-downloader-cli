@@ -16,7 +16,14 @@ expect {
     "Choose a version (type to filter):" { send "$version\r" }
     "Type a version:" { send "$version\r" }
 }
-expect "Are you sure to download"
+# The extraction prompt only shows up for tar.gz / tgz / zip selections.
+expect {
+    "Extract the archive after the download?" {
+        send "n\r"
+        expect "Are you sure to download"
+    }
+    "Are you sure to download" {}
+}
 send "$confirm\r"
 expect {
     "Download cancelled." { exit 0 }
