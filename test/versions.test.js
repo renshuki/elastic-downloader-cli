@@ -95,3 +95,19 @@ test('resolvedVersion uses the manual input when the version list was skipped', 
     assert.equal(resolvedVersion({ version: undefined, manualVersion: '2.4.6' }), '2.4.6');
     assert.equal(resolvedVersion({ version: '8.14.0', manualVersion: undefined }), '8.14.0');
 });
+
+test('selecting the manual escape hatch asks for input and uses its answer', () => {
+    const questions = buildQuestions(VERSIONS);
+    // The escape hatch is always the first choice in the search-list.
+    const manualLabel = questionByName(questions, 'version').choices({ product: {} })[0];
+    const manual = questionByName(questions, 'manualVersion');
+
+    assert.equal(manual.when({ product: {}, version: manualLabel }), true);
+    assert.equal(resolvedVersion({ version: manualLabel, manualVersion: '6.2.4' }), '6.2.4');
+});
+
+test('picking a version from the list skips the manual input', () => {
+    const manual = questionByName(buildQuestions(VERSIONS), 'manualVersion');
+
+    assert.equal(manual.when({ product: {}, version: '8.14.0' }), false);
+});
