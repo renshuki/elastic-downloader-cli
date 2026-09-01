@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 
 const productGroups = require('../lib/products');
 const { ARCHITECTURES, DEFAULT_ARCHS, architecturesFor } = require('../lib/architectures');
+const { compareVersions } = require('../lib/download');
 
 const allProducts = productGroups.flatMap((group) => group.products);
 
@@ -62,11 +63,20 @@ test('every product resolves to a non-empty, well-formed architecture list', () 
 
 test('version boundaries and base URLs are well-formed where declared', () => {
     for (const product of allProducts) {
-        if (product.noArchBefore !== undefined) {
-            assert.match(
-                product.noArchBefore,
-                /^\d+\.\d+\.\d+$/,
-                `"${product.slug}" has a malformed noArchBefore "${product.noArchBefore}"`
+        for (const field of ['noArchBefore', 'minVersion', 'maxVersion']) {
+            if (product[field] !== undefined) {
+                assert.match(
+                    product[field],
+                    /^\d+\.\d+\.\d+$/,
+                    `"${product.slug}" has a malformed ${field} "${product[field]}"`
+                );
+            }
+        }
+
+        if (product.minVersion !== undefined && product.maxVersion !== undefined) {
+            assert.ok(
+                compareVersions(product.minVersion, product.maxVersion) < 0,
+                `"${product.slug}" has minVersion "${product.minVersion}" not below maxVersion "${product.maxVersion}"`
             );
         }
 
