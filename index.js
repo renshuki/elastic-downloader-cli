@@ -18,4 +18,8 @@ inquirer.prompt(questions)
         }
 
         return download(answers);
+    })
+    .catch((err) => {
+        console.error(chalk.red(err.message || String(err)));
+        process.exitCode = 1;
     });
