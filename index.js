@@ -33,6 +33,14 @@ async function main() {
     const answers = await inquirer.prompt(buildQuestions(versions), preset);
     answers.version = resolvedVersion(answers);
 
+    // Covers --extract combined with an interactively selected package type:
+    // the flag cannot be validated upfront when the architecture is only
+    // known after the prompt.
+    if (answers.extract && !isExtractable(answers.arch)) {
+        console.log(chalk.yellow(`.${answers.arch.ext} packages cannot be extracted, --extract will be ignored.`));
+        answers.extract = false;
+    }
+
     if (!answers.confirm) {
         console.log(chalk.yellow('Download cancelled.'));
         return;
@@ -40,7 +48,7 @@ async function main() {
 
     const filename = await download(answers);
 
-    if (answers.extract && isExtractable(answers.arch)) {
+    if (answers.extract) {
         await extract(filename);
 
         if (answers.deleteArchive) {
