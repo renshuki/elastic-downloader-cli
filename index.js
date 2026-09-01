@@ -9,7 +9,7 @@ const printBanner = require('./lib/banner');
 const { parseArgs } = require('./lib/cli');
 const { buildQuestions, resolvedVersion } = require('./lib/questions');
 const { fetchVersions } = require('./lib/versions');
-const { download } = require('./lib/download');
+const { download, isLegacyNoArch } = require('./lib/download');
 const { extract, isExtractable } = require('./lib/extract');
 
 async function main() {
@@ -32,6 +32,12 @@ async function main() {
 
     const answers = await inquirer.prompt(buildQuestions(versions), preset);
     answers.version = resolvedVersion(answers);
+
+    // The interactive confirmation prompt carries this caveat itself, but a
+    // scripted run (--yes) skips the prompt, so the notice must be printed.
+    if (preset.confirm && isLegacyNoArch(answers.product, answers.arch, answers.version)) {
+        console.log(chalk.yellow(`${answers.product.name} versions before ${answers.product.noArchBefore} ship a single platform independent package; the "${answers.arch.name}" selection will not apply.`));
+    }
 
     // Covers --extract combined with an interactively selected package type:
     // the flag cannot be validated upfront when the architecture is only
