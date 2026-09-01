@@ -1,9 +1,9 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
 
-const productGroups = require('../lib/products');
-const { ARCHITECTURES, DEFAULT_ARCHS, architecturesFor } = require('../lib/architectures');
-const { compareVersions } = require('../lib/download');
+import productGroups from '../lib/products.js';
+import { ARCHITECTURES, DEFAULT_ARCHS, architecturesFor } from '../lib/architectures.js';
+import { compareVersions } from '../lib/download.js';
 
 const allProducts = productGroups.flatMap((group) => group.products);
 

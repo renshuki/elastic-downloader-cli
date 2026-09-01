@@ -9,10 +9,10 @@
 //
 // Exits with status 1 when any combination fails, so it can be used in CI.
 
-const axios = require('axios');
-const productGroups = require('../lib/products');
-const { architecturesFor } = require('../lib/architectures');
-const { buildFilename, buildUrl } = require('../lib/download');
+import axios from 'axios';
+import productGroups from '../lib/products.js';
+import { architecturesFor } from '../lib/architectures.js';
+import { buildFilename, buildUrl } from '../lib/download.js';
 
 // Representative version per product slug (a version for which the product
 // was actually released). Entries can either be a plain version string or an

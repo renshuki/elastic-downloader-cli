@@ -1,8 +1,15 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
 
-const { versionsFor } = require('../lib/versions');
-const { buildQuestions, resolvedVersion } = require('../lib/questions');
+import { versionsFor } from '../lib/versions.js';
+import {
+    productChoices,
+    architectureChoices,
+    filterVersionChoices,
+    requireVersion,
+    confirmMessage,
+    MANUAL_VERSION,
+} from '../lib/questions.js';
 
 // Newest first, like the fetched list.
 const VERSIONS = ['8.14.0', '8.0.0', '7.17.0', '7.10.2', '7.4.0', '6.8.23', '6.2.4', '5.6.16', '1.3.1'];
@@ -36,78 +43,68 @@ test('versionsFor returns an empty list when nothing is in range', () => {
     assert.deepEqual(versionsFor({ minVersion: '2.0.0', maxVersion: '5.0.0' }, VERSIONS), []);
 });
 
-function questionByName(questions, name) {
-    const question = questions.find((q) => q.name === name);
-    assert.ok(question, `no question named "${name}"`);
-    return question;
-}
-
-test('version choices are restricted to the selected product', () => {
-    const questions = buildQuestions(VERSIONS);
-    const version = questionByName(questions, 'version');
-    const product = { minVersion: '5.0.0', maxVersion: '6.3.0' };
-
-    assert.equal(version.when({ product }), true);
-    // First choice is the manual entry escape hatch, then the in-range
-    // versions only.
-    assert.deepEqual(version.choices({ product }).slice(1), ['6.2.4', '5.6.16']);
+test('filterVersionChoices leads with the escape hatch when no term is typed', () => {
+    assert.deepEqual(
+        filterVersionChoices(['8.14.0', '7.10.2'], ''),
+        [MANUAL_VERSION, '8.14.0', '7.10.2']
+    );
+    assert.deepEqual(filterVersionChoices(['8.14.0'], undefined), [MANUAL_VERSION, '8.14.0']);
 });
 
-test('version list is skipped and manual input offered when nothing is in range', () => {
-    const questions = buildQuestions(VERSIONS);
-    const product = { minVersion: '2.0.0', maxVersion: '5.0.0' };
-
-    assert.equal(questionByName(questions, 'version').when({ product }), false);
-
-    const manual = questionByName(questions, 'manualVersion');
-    assert.equal(manual.when({ product, version: undefined }), true);
-    assert.equal(manual.default({ product }), undefined);
+test('filterVersionChoices narrows by substring and keeps the escape hatch reachable', () => {
+    assert.deepEqual(
+        filterVersionChoices(VERSIONS, '7.1'),
+        ['7.17.0', '7.10.2', MANUAL_VERSION]
+    );
+    assert.deepEqual(
+        filterVersionChoices(VERSIONS, '8.14.0'),
+        ['8.14.0', MANUAL_VERSION]
+    );
 });
 
-test('manual input defaults to the latest release within the product range', () => {
-    const questions = buildQuestions(VERSIONS);
-    const manual = questionByName(questions, 'manualVersion');
-    const product = { minVersion: '6.3.0', maxVersion: '7.11.0' };
-
-    assert.equal(manual.default({ product }), '7.10.2');
+test('filterVersionChoices still offers the escape hatch when nothing matches', () => {
+    assert.deepEqual(filterVersionChoices(VERSIONS, '9.9.9'), [MANUAL_VERSION]);
 });
 
 test('typed versions are validated against a URL and filename safe format', () => {
-    // Same validation in both prompts: the manual escape hatch (fetched
-    // list) and the plain input (version fetch failed).
-    const inputs = [
-        questionByName(buildQuestions(VERSIONS), 'manualVersion'),
-        questionByName(buildQuestions(null), 'version'),
-    ];
-
-    for (const input of inputs) {
-        assert.equal(input.validate('8.14.0'), true);
-        assert.equal(input.validate(' 8.14.0 '), true, 'surrounding whitespace is trimmed');
-        assert.equal(input.validate('8.0.0-rc1'), true, 'pre-releases stay reachable');
-        assert.notEqual(input.validate(''), true);
-        assert.notEqual(input.validate('   '), true);
-        assert.notEqual(input.validate('../../8.14.0'), true, 'path separators are rejected');
-        assert.notEqual(input.validate('8.14.0 linux'), true, 'inner whitespace is rejected');
-    }
+    assert.equal(requireVersion('8.14.0'), true);
+    assert.equal(requireVersion(' 8.14.0 '), true, 'surrounding whitespace is trimmed');
+    assert.equal(requireVersion('8.0.0-rc1'), true, 'pre-releases stay reachable');
+    assert.notEqual(requireVersion(''), true);
+    assert.notEqual(requireVersion('   '), true);
+    assert.notEqual(requireVersion('../../8.14.0'), true, 'path separators are rejected');
+    assert.notEqual(requireVersion('8.14.0 linux'), true, 'inner whitespace is rejected');
 });
 
-test('resolvedVersion uses the manual input when the version list was skipped', () => {
-    assert.equal(resolvedVersion({ version: undefined, manualVersion: '2.4.6' }), '2.4.6');
-    assert.equal(resolvedVersion({ version: '8.14.0', manualVersion: undefined }), '8.14.0');
+test('product choices show availability notes and group separators', () => {
+    const choices = productChoices();
+    const labels = choices.filter((choice) => choice.value !== undefined).map((choice) => choice.name);
+
+    assert.ok(labels.includes('Elasticsearch (5.0+)'), 'availability notes must be part of the label');
+    assert.ok(labels.includes('X-Pack (5.0 to 6.2)'));
+    assert.ok(
+        choices.some((choice) => choice.type === 'separator'),
+        'group separators must be interleaved with the products'
+    );
 });
 
-test('selecting the manual escape hatch asks for input and uses its answer', () => {
-    const questions = buildQuestions(VERSIONS);
-    // The escape hatch is always the first choice in the search-list.
-    const manualLabel = questionByName(questions, 'version').choices({ product: {} })[0];
-    const manual = questionByName(questions, 'manualVersion');
+test('architecture choices expose display names and definitions', () => {
+    const choices = architectureChoices({ archs: ['windows-x86_64', 'windows-x86'] });
 
-    assert.equal(manual.when({ product: {}, version: manualLabel }), true);
-    assert.equal(resolvedVersion({ version: manualLabel, manualVersion: '6.2.4' }), '6.2.4');
+    assert.deepEqual(choices.map((choice) => choice.name), ['WINDOWS 64-BIT', 'WINDOWS 32-BIT (up to 7.x)']);
+    assert.equal(choices[0].value.id, 'windows-x86_64');
 });
 
-test('picking a version from the list skips the manual input', () => {
-    const manual = questionByName(buildQuestions(VERSIONS), 'manualVersion');
+test('confirmMessage warns when the architecture will not apply to a legacy version', () => {
+    const product = { name: 'Elasticsearch', noArchBefore: '7.0.0' };
+    const arch = { name: 'LINUX 64-BIT', suffix: 'linux-x86_64' };
 
-    assert.equal(manual.when({ product: {}, version: '8.14.0' }), false);
+    assert.match(
+        confirmMessage({ product, arch, version: '6.8.23' }),
+        /ship a single platform independent package, so "LINUX 64-BIT" will not apply/
+    );
+    assert.match(
+        confirmMessage({ product, arch, version: '7.0.0' }),
+        /^Are you sure to download Elasticsearch 7\.0\.0 \(LINUX 64-BIT\)/
+    );
 });

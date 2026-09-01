@@ -1,9 +1,9 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
 
-const { compareVersions, buildFilename, buildUrl, isLegacyNoArch } = require('../lib/download');
-const productGroups = require('../lib/products');
-const { architecturesFor } = require('../lib/architectures');
+import { compareVersions, buildFilename, buildUrl, isLegacyNoArch } from '../lib/download.js';
+import productGroups from '../lib/products.js';
+import { architecturesFor } from '../lib/architectures.js';
 
 function findProduct(slug) {
     const product = productGroups.flatMap((group) => group.products).find((p) => p.slug === slug);

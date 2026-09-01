@@ -1,16 +1,14 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const chalk = require('chalk');
-const inquirer = require('inquirer');
-inquirer.registerPrompt('search-list', require('inquirer-search-list'));
+import fs from 'node:fs';
+import chalk from 'chalk';
 
-const printBanner = require('./lib/banner');
-const { parseArgs } = require('./lib/cli');
-const { buildQuestions, resolvedVersion } = require('./lib/questions');
-const { fetchVersions } = require('./lib/versions');
-const { download, isLegacyNoArch } = require('./lib/download');
-const { extract, isExtractable } = require('./lib/extract');
+import printBanner from './lib/banner.js';
+import { parseArgs } from './lib/cli.js';
+import { askAnswers } from './lib/questions.js';
+import { fetchVersions } from './lib/versions.js';
+import { download, isLegacyNoArch } from './lib/download.js';
+import { extract, isExtractable } from './lib/extract.js';
 
 async function main() {
     const preset = parseArgs(process.argv);
@@ -30,8 +28,7 @@ async function main() {
         }
     }
 
-    const answers = await inquirer.prompt(buildQuestions(versions), preset);
-    answers.version = resolvedVersion(answers);
+    const answers = await askAnswers(preset, versions);
 
     // The interactive confirmation prompt carries this caveat itself, but a
     // scripted run (--yes) skips the prompt, so the notice must be printed.
@@ -65,6 +62,13 @@ async function main() {
 }
 
 main().catch((err) => {
+    // Ctrl+C while a prompt is open surfaces as ExitPromptError: treat it
+    // like an explicit cancellation, not a failure.
+    if (err && err.name === 'ExitPromptError') {
+        console.log(chalk.yellow('Download cancelled.'));
+        return;
+    }
+
     console.error(chalk.red(err.message || String(err)));
     process.exitCode = 1;
 });

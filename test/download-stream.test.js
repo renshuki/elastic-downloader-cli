@@ -1,11 +1,11 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
-const http = require('node:http');
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import http from 'node:http';
 
-const { download } = require('../lib/download');
+import { download } from '../lib/download.js';
 
 const ARCH = { id: 'linux-x86_64', name: 'LINUX 64-BIT', suffix: 'linux-x86_64', ext: 'tar.gz' };
 
