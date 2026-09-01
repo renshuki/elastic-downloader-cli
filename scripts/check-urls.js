@@ -74,8 +74,12 @@ async function main() {
             for (const arch of architecturesFor(product)) {
                 const version = versionFor(product, arch, versionOverride);
 
+                // A product missing from TEST_VERSIONS must fail the run,
+                // otherwise newly added catalog entries would silently lose
+                // coverage.
                 if (!version) {
-                    console.log(`  ?    ${product.name} / ${arch.id}: no test version configured`);
+                    failures += 1;
+                    console.log(`  MISSING  ${product.name} / ${arch.id}: no test version configured`);
                     continue;
                 }
 
