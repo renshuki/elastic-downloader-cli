@@ -1,6 +1,7 @@
 #!/usr/bin/expect -f
 # Drives the interactive prompts: pick first product, first architecture,
-# type a version, and answer the confirmation.
+# pick a version (search-list when available, manual input otherwise), and
+# answer the confirmation.
 # Usage: test-flow.exp <version> <y|n>
 set timeout 120
 set version [lindex $argv 0]
@@ -11,8 +12,10 @@ expect "Select a product:"
 send "\r"
 expect "Select an architecture / package:"
 send "\r"
-expect "Type a version:"
-send "$version\r"
+expect {
+    "Choose a version (type to filter):" { send "$version\r" }
+    "Type a version:" { send "$version\r" }
+}
 expect "Are you sure to download"
 send "$confirm\r"
 expect {
